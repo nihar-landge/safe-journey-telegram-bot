@@ -1,0 +1,31 @@
+# --- Project Specific ---
+# Environment variables containing sensitive tokens (BOT_TOKEN, PLATE_REC_TOKEN)
+.env
+
+# SQLite Database containing active user trips and locations
+trips.db
+
+# --- Python ---
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# --- Virtual Environments ---
+venv/
+env/
+.venv/
+env.bak/
+venv.bak/
+
+# --- IDEs and Editors ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- Logs ---
+*.log
