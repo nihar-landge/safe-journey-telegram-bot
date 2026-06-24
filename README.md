@@ -22,23 +22,10 @@ A small Telegram bot to help solo travellers and late-night commuters stay safe.
 3. Install:
    pip install -r requirements.txt
 
-4. Create a `.env` (see below) and run:
+4. Create a `.env` (see `.env.example`) and run:
    python bot.py
 
 The bot creates the SQLite DB automatically on first run.
-
-## Minimal .env
-BOT_TOKEN=your_bot_token_here
-GROUP_CHAT_ID=0
-PLATE_REC_TOKEN=         # optional
-TIMEZONE=Asia/Kolkata
-EMERGENCY_CONTACT_ID=    # optional Telegram user id
-OVERDUE_BUFFER_MINUTES=10
-SAFE_EXTENSION_MINUTES=15
-ESCALATION_AFTER_ALERTS=2
-CHECK_INTERVAL_SECONDS=60
-DB_PATH=trips.db
-LOG_LEVEL=INFO
 
 ## Commands (user)
 - /start — show menu or active trip info
