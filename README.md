@@ -1,62 +1,83 @@
-# Safe Journey — Telegram Travel Check-In Bot
+# 🛡️ Safe Journey Telegram Bot
 
-A small Telegram bot to help solo travellers and late-night commuters stay safe. Start a trip, share a vehicle photo and location, set expected duration — the bot monitors the trip and notifies an emergency contact if the traveller becomes unresponsive.
+A Telegram bot for solo travellers and late-night commuters. You start a trip, and the bot watches the clock. If you go quiet, it alerts your emergency contact.
 
-## Quick features
-- Guided trip flow: photo → start location → destination → expected time
-- Optional cloud OCR (Plate Recognizer) to read number plates from a photo
-- Background monitoring with overdue alerts and escalation to an emergency contact
-- Async, non-blocking code: python-telegram-bot + aiosqlite
-- Timezone-aware (UTC storage, local display)
+## ✨ Features
 
-## Get running (short)
-1. Clone:
-   git clone https://github.com/nihar-landge/safe-journey-telegram-bot.git
-   cd safe-journey-telegram-bot
+- **Guided trip start (4 steps):** vehicle photo, live location pin, destination, expected time (1–300 min)
+- **Number plate reading:** optional OCR through the Plate Recognizer API. The trip continues if the plate can't be read.
+- **Server-side timer:** a background job checks all active trips, so it works even if your phone dies.
+- **Overdue alerts:** when your time plus a buffer runs out, the bot sends buttons: ✅ Safe, 🛑 End Trip, 🆘 SOS.
+- **Auto-escalation:** if you ignore repeated alerts, your emergency contact gets the destination, start coordinates, start time and elapsed time.
+- **One-tap SOS:** an instant alert to your emergency contact.
+- **Safe arrival check:** confirm you are safe and share your end location to close the trip.
+- **Trip summary:** destination, plate, start and end location, actual vs expected duration.
+- **Cancel anytime:** with a confirmation step.
+- **Owner-only buttons:** only the traveller can press the alert buttons.
+- **Timezone-aware:** times are stored in UTC and shown in local time.
+- **Zero setup database:** SQLite is created on first run.
 
-2. Create & activate venv:
-   python -m venv venv
-   source venv/bin/activate     # macOS / Linux
-   venv\Scripts\activate        # Windows
+## 🧰 Tech Stack
 
-3. Install:
-   pip install -r requirements.txt
+| Part | Use |
+|---|---|
+| Python 3 | Language |
+| python-telegram-bot (with JobQueue) | Bot and background checks |
+| asyncio + aiosqlite | Non-blocking SQLite storage |
+| Plate Recognizer API (via requests) | Number plate OCR |
+| pytz | Timezones |
+| python-dotenv | Config from `.env` |
 
-4. Create a `.env` (see `.env.example`) and run:
-   python bot.py
+## 🚀 Quick Start
 
-The bot creates the SQLite DB automatically on first run.
+```bash
+git clone https://github.com/nihar-landge/safe-journey-telegram-bot.git
+cd safe-journey-telegram-bot
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
 
-## Commands (user)
-- /start — show menu or active trip info
-- /setcontact <telegram_user_id> <name> — set your emergency contact
+Create a `.env` file (see `.env.example`). `BOT_TOKEN` is required. Leave `PLATE_REC_TOKEN` empty to skip OCR. Then run:
 
-UI buttons:
-- 📸 Start Trip — begin guided registration
-- 🛑 End Trip — confirm safety + share final location
-- ❌ Cancel Trip — cancel active trip
+```bash
+python bot.py
+```
 
-Overdue alert actions:
-- Safe — extend check window
-- End Trip — finish trip flow
-- SOS — send emergency alert now
+## 💬 Commands and Buttons
 
-## How it works (simple)
-- bot.py handles conversations and commands.
-- database.py stores trips and users in SQLite (aiosqlite).
-- ocr.py sends images to Plate Recognizer (optional).
-- scheduler.py runs a repeating job that checks active trips and sends alerts / escalates.
+| Action | What it does |
+|---|---|
+| `/start` | Show the menu, or your active trip |
+| `/setcontact <telegram_user_id> <name>` | Save an emergency contact |
+| 📸 Start Trip | Begin the guided flow |
+| 🛑 End Trip | Confirm safety and share your final location |
+| ❌ Cancel Trip | Cancel the active trip |
 
-## Data stored
-- users: user id, chat id, emergency contact
-- trips: start/end location, photo id, detected number plate, expected time, status, overdue count
-Do not commit the DB or .env to version control.
+## ⚙️ How It Works
 
-## Notes & troubleshooting
-- BOT_TOKEN is required.
-- If OCR is not needed, leave PLATE_REC_TOKEN empty; OCR will be skipped.
-- Check logs for scheduling or sending errors.
-- Keep `.env` secret.
+| File | Job |
+|---|---|
+| `bot.py` | Conversations, commands, SOS |
+| `scheduler.py` | Repeating job: overdue alerts and escalation |
+| `database.py` | Users and trips in SQLite |
+| `ocr.py` | Plate Recognizer calls |
+| `config.py` | Settings and timings |
+| `helpers.py` | Time and format helpers |
 
-## License
-MIT — author: Nihar Landge
+**Alert flow:** trip runs → time + buffer passes → alert → tap Safe to extend the check → no reply → alert again → contact is notified.
+
+## 🗄️ Data Stored
+
+- **users:** user ID, chat ID, emergency contact
+- **trips:** start and end location, photo ID, number plate, expected time, status, overdue count
+
+## 🔒 Notes
+
+- Never commit `.env` or the database file.
+- There is no live tracking. The contact gets the start point only.
+- Check the logs if alerts don't send.
+
+## 📄 License
+
+MIT © Nihar Landge
